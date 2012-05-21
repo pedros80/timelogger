@@ -9,19 +9,14 @@ requires - python 2.x, Tkinter and MySQLdb.
 run python setup_logger.py to start
 change username and password in Logger() at bottom of script
 
-
-Known Issues:
-If task is started, it *MUST* be stopped before closing app or starting
-new task otherwise time spent will not be stored.
-
 See also README.md and LICENSE.txt
 
 """
 
 __author__ = "Peter Somerville"
 __email__ = "peterwsomerville@gmail.com"
-__version__ = "1.0.0"
-__date__ = "14/5/12"
+__version__ = "1.0.1"
+__date__ = "21/5/12"
 
 
 import Tkinter as tk
@@ -159,7 +154,7 @@ class Logger(tk.Frame):
             self.space.config(text="Select a task to remove...")
         
     def start(self):
-        if self.tasks.listbox.curselection():
+        if self.tasks.listbox.curselection() and self.current_task is None:
             self.start_config()
             tid, description = self.tasks.listbox.get(self.tasks.listbox.curselection()).split("-")
             self.space.config(text="Timing - '%s'"%description)
@@ -177,11 +172,11 @@ class Logger(tk.Frame):
             self.space.config(text="Select a task to start timing...")
                    
     def stop(self):
-        if self.tasks.listbox.curselection():
+        if self.tasks.listbox.curselection() and self.current_task is not None:
             self.stop_config()
             self.space.config(text="")
-            tid, description = self.tasks.listbox.get(self.tasks.listbox.curselection()).split("-")
-            tid = int(tid)
+            tid = self.current_task
+            self.current_task = None
             now = datetime.datetime.now()
             now = now.isoformat(' ').split(".")[0]
             self.cur.execute("UPDATE logs SET stop='%s' WHERE tid='%d' AND start='%s'"%(now,tid,self.start))

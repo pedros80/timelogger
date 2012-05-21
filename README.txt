@@ -29,4 +29,4 @@ python 2.x, Tkinter and MySQLdb.
 
 Known Issues:
 If task is started, it *MUST* be stopped before closing app or starting
-new task otherwise time spent will not be stored.
+new task otherwise time spent will not be stored. - Fixed in 1.0.1
