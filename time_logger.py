@@ -117,7 +117,7 @@ class Logger(tk.Frame):
             self.cur.execute("SELECT descript FROM tasks WHERE tid='%d'"%tid)
             task = self.cur.fetchone()[0]
             self.tasks.listbox.delete(0,tk.END)
-            self.tasks.listbox.insert(0, "%d - %s - %s"%(tid, task, duration))
+            self.tasks.listbox.insert(0, "%d - %s"%(tid, task))
             self.space.config(text="Time spent: \n %s"% duration)
             self.del_task_btn.config(state=tk.DISABLED)
             self.details_btn.config(state=tk.DISABLED)
@@ -187,6 +187,7 @@ class Logger(tk.Frame):
         self.details_btn.config(state=tk.NORMAL)
         self.get_tasks_btn.config(state=tk.DISABLED)
         self.start_btn.config(state=tk.NORMAL)
+        self.space.config(text="")
         try:
             self.cur.execute("SELECT tid, descript FROM tasks ORDER BY tid")
             rows = self.cur.fetchall()
