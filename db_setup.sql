@@ -12,7 +12,6 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON 'logger' TO 'logger_u'@'localhost';
 CREATE TABLE tasks (
             tid INT NOT NULL AUTO_INCREMENT,
             descript VARCHAR(200),
-            redmine_id VARCHAR(5),
             PRIMARY KEY (tid)
 );
 
