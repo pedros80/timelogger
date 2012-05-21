@@ -1,3 +1,29 @@
+#!/usr/bin/env python
+""" 
+time_logger.py
+
+Store start and stop times for named tasks and calculate the previous time
+spent on them.
+
+requires - python 2.x, Tkinter and MySQLdb.
+run python setup_logger.py to start
+change username and password in Logger() at bottom of script
+
+
+Known Issues:
+If task is started, it *MUST* be stopped before closing app or starting
+new task otherwise time spent will not be stored.
+
+See also README.md and LICENSE.txt
+
+"""
+
+__author__ = "Peter Somerville"
+__email__ = "peterwsomerville@gmail.com"
+__version__ = "1.0.0"
+__date__ = "14/5/12"
+
+
 import Tkinter as tk
 import MySQLdb as mdb
 import datetime
@@ -6,27 +32,27 @@ import sys
 class ScrolledList(tk.Frame):
     def __init__(self, options, parent=None):
         tk.Frame.__init__(self, parent, bg="black")
-        self.pack(expand=tk.YES, fill=tk.BOTH)                  # make me expandable
+        self.pack(expand=tk.YES, fill=tk.BOTH)                
         self.makeWidgets(options)
-    def makeWidgets(self, options):                       # or get(ACTIVE)
+    def makeWidgets(self, options):                 
         sbary = tk.Scrollbar(self)
         sbarx = tk.Scrollbar(self)
         list = tk.Listbox(self, relief=tk.SUNKEN, width=35, height=12,bg="black",fg="white")
-        sbary.config(command=list.yview)                   # xlink sbar and list
+        sbary.config(command=list.yview)                 
         sbarx.config(command=list.xview,orient=tk.HORIZONTAL)
-        list.config(yscrollcommand=sbary.set,xscrollcommand=sbarx.set)              # move one moves other
-        sbary.pack(side=tk.RIGHT, fill=tk.Y)            # pack first=clip last
+        list.config(yscrollcommand=sbary.set,xscrollcommand=sbarx.set)           
+        sbary.pack(side=tk.RIGHT, fill=tk.Y)           
         sbarx.pack(side=tk.BOTTOM, fill=tk.X)
         list.pack(side=tk.LEFT, expand=tk.YES, fill=tk.BOTH) 
         self.listbox = list
 
 
 class Logger(tk.Frame):
-    def __init__(self, master=None):
+    def __init__(self, user, pword, host="localhost", master=None,):
         tk.Frame.__init__(self, master)
        
         try:
-            self.con = mdb.connect('localhost', 'logger_u', 'this is a dummy pass', 'logger')
+            self.con = mdb.connect(host, user, pword, 'logger')
             self.cur = self.con.cursor()
         except  mdb.Error, e:
             print "Failed to connect to database"
@@ -82,15 +108,12 @@ class Logger(tk.Frame):
         self.task_name = tk.Entry(self, bg="grey")
         self.task_name.grid(row=3, column=0, sticky=tk.E+tk.N+tk.S+tk.W)
 
-
-    def task_a(self, event):
-            self.task()
     
     def task(self):
         if self.tasks.listbox.curselection():
             self.space.config(text="")
             tid = int(self.tasks.listbox.get(self.tasks.listbox.curselection()).split("-")[0])
-            self.cur.execute("select SEC_TO_TIME(SUM(TIME_TO_SEC(stop) - TIME_TO_SEC(start))) from logs where tid='%d'"%tid)
+            self.cur.execute("SELECT SEC_TO_TIME(SUM(TIME_TO_SEC(stop) - TIME_TO_SEC(start))) FROM logs WHERE tid='%d'"%tid)
             row = self.cur.fetchone()
             if row[0] is not None:
                 duration = (datetime.datetime.min+row[0]).time()
@@ -135,9 +158,6 @@ class Logger(tk.Frame):
         else:
             self.space.config(text="Select a task to remove...")
         
-    def remove_a(self, event):
-        self.remove()
-        
     def start(self):
         if self.tasks.listbox.curselection():
             self.start_config()
@@ -180,17 +200,17 @@ class Logger(tk.Frame):
         except mdb.Error, e:
             print "Error %d: %s" % (e.args[0],e.args[1])
             sys.exit(1)
-
-
+            
+    def task_a(self, event):
+        self.task()
+    def remove_a(self, event):
+        self.remove()
     def get_tasks_a(self,event):
         self.get_tasks()
-    
     def stop_a(self, event):
         self.stop()
-    
     def start_a(self, event):
         self.start()
-        
     def quit_a(self, event):
         self.quit()
 
@@ -211,6 +231,8 @@ class Logger(tk.Frame):
         self.del_task_btn.configure(state=tk.DISABLED)
         self.quit_btn.config(state=tk.DISABLED)
 
-
-log = Logger()
-log.mainloop()
+if __name__ == "__main__":
+    # change username and password to match user created after setup_logger.py
+    # if host is not localhost add third argument, i.e. call Logger('user','pass','host') 
+    log = Logger("logger_u", "this is a dummy pass")
+    log.mainloop()
