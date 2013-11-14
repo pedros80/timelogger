@@ -6,12 +6,12 @@
 Standard MIT open source; see LICENSE.txt for more information
 
 # Installation.
-run python setup_logger.py for more information
+`python setup_logger.py` for more information
 
-usage: python setup_logger.py db_host db_user db_password
+usage: `python setup_logger.py db_host db_user db_password`
 
 # Usage.
-Once installed run python time_logger.py to start application.
+Once installed run `python time_logger.py` to start application.
 - New Task
 
     Type description of task into text field and press 'New Task'
@@ -31,7 +31,7 @@ Once installed run python time_logger.py to start application.
     Select desired task from list and press 'Remove Task'
 
 # System Requirements.
-python 2.x, Tkinter and MySQLdb.
+`python 2.x`, `Tkinter` and [`MySQLdb`](http://mysql-python.sourceforge.net/).
 
 
 # Known Issues:
